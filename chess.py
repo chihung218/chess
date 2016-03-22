@@ -16,10 +16,12 @@ class Chess:
         self.piece=pieces[sel.rank]
         self.jump=False
         self.swim=False
-        
+    def getRank(self):
+        return self.rank
 class Board:
     def __init__(self):
-        self.chessBoard=[[0]*7]*9       
+        self.board=[[0]*7]*9
+        self.chessBoard=[[0]*7]*9
     def start(self):
         for i in range(0,9):
             for j in range(0,7):
