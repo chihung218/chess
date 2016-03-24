@@ -39,6 +39,10 @@ class Board:
     def updatePosition(self,chess,x,y):
         self.chessBoard[x][y]=chess
         printBoard()
+    def getPosition(self,x,y):
+        return self.chessBoard[x][y]
+
+    
 class Game:
     def __init__(self):
         self.running=False
@@ -72,7 +76,23 @@ class Game:
 #            print("Game Cannot End")
 
     #def playerTurn(self):
-        
+
+
+class Rules():
+    def validateEat(chessA, chessB):
+        if chessA.getRank() == 0 and chessB.getRank() == 7:
+            return True
+        if chessA.getRank() == 7 and chessB.getRank() == 0:
+            return False
+        if chessA.getRank() >= chessB.getRank():
+            return True
+        else:
+            return False
+
+    #def validateMove(chessA, x, y, board):
+        #if board.getPosition(x,y) == 0:
+            
+
 def main():
     g=Game()
     g.gameStart()
