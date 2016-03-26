@@ -7,6 +7,14 @@ class Player:
 
     def get(self):
         return self.name
+    def rename(self):
+        while(True):
+            name=input("Input new name (",self.name," ):",sep="",end="")
+            if name!="":
+                self.name=name
+                break
+            else:
+                print("Name can not be empty!")
 
 class Chess:
     pieces={"Rat","Cat","Dog","Wolf","Leopard","Tiger","Lion","Elephant"}
@@ -62,6 +70,7 @@ class Game:
         self.board=Board()
         self.board.start()
         self.board.printBoard()
+
     def getPlayer(self,player):
         if player.upper=="A":
             return self.playerA
@@ -70,17 +79,17 @@ class Game:
         else:
             #print("None such player")
             return None
-    #def endGame(self,winner=None):
-        #print(winner)
-        #if (winner is None):
-            #raise TypeError("Invalid Input")
-        #elif(self.running & ((self.getPlayer(winner)==self.playerA)|(self.getPlayer(winner)==self.playerB))):
-#            self.running=False
-#            self.winner=winner
-        #else:
-#            print("Game Cannot End")
 
-    #def playerTurn(self):
+    def endGame(self,winner):
+        if(self.running ):#& ((self.getPlayer(winner)==self.playerA)|(self.getPlayer(winner)==self.playerB))):
+            self.running=False
+            self.winner=winner
+            print(self.winner,"is the winner!!")
+            self.askReplay()
+        else:
+            print("Game Cannot End")
+    def askReplay(self):
+        replay=input("Do you want to play again?(Yes/No):")
 
 
 class Rules():
@@ -123,8 +132,7 @@ class Rules():
 def main():
     g=Game()
     g.gameStart()
-    #g.endGame()
+    g.endGame("")
 
-    
 if __name__=="__main__":
     main()
