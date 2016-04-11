@@ -172,14 +172,14 @@ class Rules():
                 return "end"
         if board.getSpecialGrid(x, y) == "#":
             return validateTrap(chessA, x, y, board)
-        if chessA.swim == True and board.getSpecialGrid(x, y) == "water":
+        if chessA.swim == True and board.getSpecialGrid(x, y) == "~~":
             return validateSwim(chessA, x, y, board)
-        if chessA.jump == True and board.getSpecialGrid(x, y) == "water":
+        if chessA.jump == True and board.getSpecialGrid(x, y) == "~~":
             return validateJump(chessA, x, y, board)
         Ax, Ay = chessA.getPostion()
         chessB = board.getPosition(x,y)
         if chessB == 0:
-            if abs(Ax-x) == 1 and abs(Ay-y) == 1:
+            if abs(Ax-x) == 1 or abs(Ay-y) == 1:
                 board.updatePosition(chessA, x, y)
                 return True
         elif validateEat(chessA, chessB):
@@ -192,7 +192,7 @@ class Rules():
         Ax, Ay = chessA.getPostion()
         chessB = board.getPosition(x,y)
         if chessB == 0:
-            if abs(Ax-x) == 1 and abs(Ay-y) == 1:
+            if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
                 board.updatePosition(chessA, x, y)
                 return True
         else:
@@ -201,7 +201,7 @@ class Rules():
     def validateJump(chessA, x, y, board):
         count = 0
         Ax, Ay = chessA.getPostion()
-        if abs(Ax-x) == 1 and abs(Ay-y) == 1:
+        if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
             for i in range(x,x+3):
                 count = 0
                 for j in range(y,y+3):
@@ -228,7 +228,7 @@ class Rules():
         Ax, Ay = chessA.getPostion()
         chessB = board.getPosition(x,y)
         if chessB == 0:
-            if abs(Ax-x) == 1 and abs(Ay-y) == 1:
+            if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
                 board.updatePosition(chessA, x, y)
                 return True
         elif validateEat(chessA, chessB):
@@ -238,7 +238,7 @@ class Rules():
 
     def validateTrap(chessA, x, y, board):
         Ax, Ay = chessA.getPostion()
-        if abs(Ax-x) == 1 and abs(Ay-y) == 1:
+        if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
             board.updatePosition(chessA, x, y)
             return True
         return False
