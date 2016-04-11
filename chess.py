@@ -1,27 +1,27 @@
 class Player:
-    def __init__(self,name):
-        self.name=name
+    def __init__(self,player):
+        self.name=""
+        self.naming(player)
 
     def printName(self):
         print(self.name)
 
     def get(self):
         return self.name
-    def rename(self):
+    def naming(self,player):
         while(True):
-            name=input("Input new name (",self.name," ):",sep="",end="")
+            name=input("Input Player ("+player+"):")
             if name!="":
                 self.name=name
+                print("Player",player,"Name:",self.name,"\n")
                 break
             else:
-                print("Name can not be empty!")
+                print("\nName can not be empty!")
 
 class Chess:
-    pieces={"Rat","Cat","Dog","Wolf","Leopard","Tiger","Lion","Elephant"}
     def __init__(self,rank,color,x,y):
         self.rank=rank
         self.color=color
-        self.piece=pieces[sel.rank]
         self.jump=False
         self.swim=False
         self.x = x
@@ -30,29 +30,75 @@ class Chess:
         return self.rank
     def getPosition(self):
         return self.x,self.y
-
+    def updatePos(self,x,y):
+        self.x = x
+        self.y = y
+    def __str__(self):
+        return self.color+str(self.rank)
 class Board:
     def __init__(self):
-        self.board=[[0]*7]*9
-        self.chessBoard=[[0]*7]*9
+        self.board=[]
+        for row in range(9): self.board+=[['']*7]
+        self.chessBoard=[]
+        for row in range(9): self.chessBoard+=[['']*7]
     def start(self):
-        for i in range(0,9):
-            for j in range(0,7):
-                self.chessBoard[i][j]=0               
+        self.board[0][2]="#"
+        self.board[0][4]="#"
+        self.board[1][3]="#"
+        self.board[8][2]="#"
+        self.board[8][4]="#"
+        self.board[7][3]="#"
+        self.board[0][3]="@"
+        self.board[8][3]="@"
+        for i in range(3,6):
+            for j in range(1,3):
+                self.board[i][j]="~~"
+            for j in range(4,6):
+                self.board[i][j]="~~"
+        self.chessBoard[0][0]=Chess(6,"A",0,0)#Lion
+        self.chessBoard[0][6]=Chess(5,"A",0,6)#Tiger
+        self.chessBoard[1][1]=Chess(2,"A",1,1)#Dog
+        self.chessBoard[1][5]=Chess(1,"A",1,5)#Cat
+        self.chessBoard[2][0]=Chess(0,"A",2,0)#Rat
+        self.chessBoard[2][2]=Chess(4,"A",2,2)#Leopard
+        self.chessBoard[2][4]=Chess(3,"A",2,4)#Wolf
+        self.chessBoard[2][6]=Chess(8,"A",2,6)#Elephant
+        self.chessBoard[8][6]=Chess(6,"B",8,6)#Lion
+        self.chessBoard[8][0]=Chess(5,"B",8,0)#Tiger
+        self.chessBoard[7][5]=Chess(2,"B",7,5)#Dog
+        self.chessBoard[7][1]=Chess(1,"B",7,1)#Cat
+        self.chessBoard[6][6]=Chess(0,"B",6,6)#Rat
+        self.chessBoard[6][4]=Chess(4,"B",6,4)#Leopard
+        self.chessBoard[6][2]=Chess(3,"B",6,2)#Wolf
+        self.chessBoard[6][0]=Chess(8,"B",6,0)#Elephant
+        
+    def printRank(self):
+        pieces=["Rat","Cat","Dog","Wolf","Leopard","Tiger","Lion","Elephant"]
+        print("\n+","-"*9,"+","-"*9,"+",sep="")
+        print("|","%8s "%"Rank","|","%8s "%"Piece","|",sep="")
+        print("+","-"*9,"+","-"*9,"+",sep="")
+        i=0
+        for i in range(0,len(pieces)):
+            print("|","%8s "%i,"|","%8s "%pieces[i],"|",sep="")
+            print("+","-"*9,"+","-"*9,"+",sep="")
+            
     def printBoard(self):
+        self.printRank()
+        print("\n--|+-----+-----+-----+-----+-----+-----+-----+")
         print("--|",sep="",end="")
         for x in range(0,7):
-            print("|%3s"%chr(65+x),sep="",end="")
-        print("|\n--|+---+---+---+---+---+---+---+")
+            print("|%5s"%chr(65+x),sep="",end="")
+        print("|\n--|+-----+-----+-----+-----+-----+-----+-----+")
         for i in range(0,9):
             print("%2d|"%i,sep="",end="")
             for j in range(0,7):
-                print("|%3s"%self.chessBoard[i][j],sep="",end="")
-            print("|\n--|+---+---+---+---+---+---+---+")
+                print("|%4s "%(str(self.chessBoard[i][j])+self.board[i][j]),sep="",end="")
+            print("|\n--|+-----+-----+-----+-----+-----+-----+-----+")
     def updatePosition(self,chess,x,y):
+        chess.updatePos(x,y)
         self.chessBoard[x][y]=chess
-        printBoard()
-    def getPosition(self,x,y):
+        
+    def getPosition(self):
         return self.chessBoard[x][y]
 
     
@@ -61,35 +107,36 @@ class Game:
         self.running=False
         self.playerA=None
         self.playerB=None
-        self.winner=None
         self.board=None
-    def gameStart(self):
+        self.gameStart()
+        self.turnA=True
+        
+    def initVar(self):
         self.running=True
         self.playerA=Player("A")
         self.playerB=Player("B")
         self.board=Board()
         self.board.start()
-        self.board.printBoard()
+    def gameStart(self):
+        self.initVar()
+        while(self.running):
+            self.board.printBoard()
+            move=input()
+            break
+            
+            
+    def endGame(self):
+        print("Game Ended!")
+        if(self.askReplay()):
+            self.initVar()
 
-    def getPlayer(self,player):
-        if player.upper=="A":
-            return self.playerA
-        elif player.upper=="B":
-            return self.playerB
-        else:
-            #print("None such player")
-            return None
-
-    def endGame(self,winner):
-        if(self.running ):#& ((self.getPlayer(winner)==self.playerA)|(self.getPlayer(winner)==self.playerB))):
-            self.running=False
-            self.winner=winner
-            print(self.winner,"is the winner!!")
-            self.askReplay()
-        else:
-            print("Game Cannot End")
     def askReplay(self):
         replay=input("Do you want to play again?(Yes/No):")
+        replay=replay[:1].lower
+        play=False
+        if replay=="y":
+            play=True
+        return play
 
 
 class Rules():
@@ -127,12 +174,10 @@ class Rules():
             board.updatePosition(chessA, x, y)
             return True
         return False
-
-
-def main():
-    g=Game()
-    g.gameStart()
-    g.endGame("")
+#swimming
+#Trap
+#Jumpping
+#Winning
 
 if __name__=="__main__":
-    main()
+    Game()
