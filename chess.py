@@ -121,7 +121,8 @@ class Game:
         self.initVar()
         while(self.running):
             self.board.printBoard()
-            move=input()
+            msg="\n It is Player"
+            move=input(msg)
             break
             
             
@@ -140,44 +141,75 @@ class Game:
 
 
 class Rules():
-    
-    #input: 2 chess pieces
-    #checks if chess A can eat chess B based on ranks, return true if A can eat B
-    #returns false otherwise
-    
-    def validateEat(chessA, chessB):
-        if chessA.getRank() == 0 and chessB.getRank() == 7:
-            return True
-        if chessA.getRank() == 7 and chessB.getRank() == 0:
-            return False
-        if chessA.getRank() >= chessB.getRank():
-            return True
-        else:
-            return False
-
-    #input:
-    #Chess: the piece that wants to move
-    #int: x position of location
-    #int: y position of target
-    #board: the board that the chess piece is moving on
-    #returns true if the movement follows the rules of the game
-    #returns false otherwised
-    
-    def validateMove(chessA, x, y, board):
-        Ax, Ay = chessA.getPostion()
-        chessB = board.getPosition(x,y)
-        if chessB == 0:
-            if abs(Ax-x) == 1 and abs(Ay-y) == 1:
-                board.updatePosition(chessA, x, y)
-                return True
-        elif validateEat(chessA, chessB):
-            board.updatePosition(chessA, x, y)
-            return True
-        return False
-#swimming
-#Trap
-#Jumpping
-#Winning
+     
+     #input: 2 chess pieces
+     #checks if chess A can eat chess B based on ranks, return true if A can eat B
+     #returns false otherwise
+     
+     def validateEat(chessA, chessB):
+         if chessA.getRank() == 0 and chessB.getRank() == 7:
+             return True
+         if chessA.getRank() == 7 and chessB.getRank() == 0:
+             return False
+         if chessA.getRank() >= chessB.getRank():
+             return True
+         else:
+             return False
+ 
+     #input:
+     #Chess: the piece that wants to move
+     #int: x position of location
+     #int: y position of target
+     #board: the board that the chess piece is moving on
+     #returns true if the movement follows the rules of the game
+      #returns false otherwised
+      
+      def validateMove(chessA, x, y, board):
+          if chessA.swim == True and board.getSpecialGrid(x, y) == "water":
+              return validateSwim(chessA, x, y, board)
+          if chessA.jump == True and board.getSpecialGrid(x, y) == "water":
+              return validateJump(chessA, x, y, board)
+          Ax, Ay = chessA.getPostion()
+          chessB = board.getPosition(x,y)
+          if chessB == 0:
+             if abs(Ax-x) == 1 and abs(Ay-y) == 1:
+                 board.updatePosition(chessA, x, y)
+                 return True
+         elif validateEat(chessA, chessB):
+             board.updatePosition(chessA, x, y)
+              return True
+          return False
+  
+      def validateSwim(chessA, x, y, board):
+          chessB = board.getPosition(x,y)
+          if chessB == 0:
+              board.updatePostition(chessA, x, y, board)
+              return True
+          else:
+              return False
+      
+      def validateJump(chessA, x, y, board):
+          count = 0
+          for(i = x; i < x+3; i ++):
+              count = 0
+              for(j = y; j < y+3; y++):
+                  if board.getSpecialGrid(i, j) == "water" :
+                      if not(board.getPosition(i,j) == 0) and board.getPosition(i,j).rank == 0:
+                          break
+                      count++
+                  elif count == 2 or count == 3:
+                      return validateMove(chessA, i, j, board)
+  
+          for(j = y; j < y+3; y++):
+              count = 0
+              for(i = x; i < x+3; i ++):
+                  if board.getSpecialGrid(i, j) == "water" :
+                      if not(board.getPosition(i,j) == 0) and board.getPosition(i,j).rank == 0:
+                          break
+                      count++
+                  elif count == 2 or count == 3:
+                      return validateMove(chessA, i, j, board)
+          return False
 
 if __name__=="__main__":
     Game()
