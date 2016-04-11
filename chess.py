@@ -48,6 +48,7 @@ class Board:
         return self.chessBoard[x][y]
 
     
+    
 class Game:
     def __init__(self):
         self.running=False
@@ -108,6 +109,10 @@ class Rules():
     #returns false otherwised
     
     def validateMove(chessA, x, y, board):
+        if chessA.swim == True and board.getSpecialGrid(x, y) == "water":
+            return validateSwim(chessA, x, y, board)
+        if chessA.jump == True and board.getSpecialGrid(x, y) == "water":
+            return validateJump(chessA, x, y, board)
         Ax, Ay = chessA.getPostion()
         chessB = board.getPosition(x,y)
         if chessB == 0:
@@ -119,6 +124,36 @@ class Rules():
             return True
         return False
 
+    def validateSwim(chessA, x, y, board):
+        chessB = board.getPosition(x,y)
+        if chessB == 0:
+            board.updatePostition(chessA, x, y, board)
+            return True
+        else:
+            return False
+    
+    def validateJump(chessA, x, y, board):
+        count = 0
+        for(i = x; i < x+3; i ++):
+            count = 0
+            for(j = y; j < y+3; y++):
+                if board.getSpecialGrid(i, j) == "water" :
+                    if not(board.getPosition(i,j) == 0) and board.getPosition(i,j).rank == 0:
+                        break
+                    count++
+                elif count == 2 or count == 3:
+                    return validateMove(chessA, i, j, board)
+
+        for(j = y; j < y+3; y++):
+            count = 0
+            for(i = x; i < x+3; i ++):
+                if board.getSpecialGrid(i, j) == "water" :
+                    if not(board.getPosition(i,j) == 0) and board.getPosition(i,j).rank == 0:
+                        break
+                    count++
+                elif count == 2 or count == 3:
+                    return validateMove(chessA, i, j, board)
+        return False
 
 def main():
     g=Game()
