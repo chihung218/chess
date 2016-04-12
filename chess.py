@@ -2,10 +2,6 @@ class Player:
     def __init__(self,player):
         self.name=""
         self.naming(player)
-
-    def printName(self):
-        print(self.name)
-
     def get(self):
         return self.name
     def naming(self,player):
@@ -24,6 +20,10 @@ class Chess:
         self.color=color
         self.jump=False
         self.swim=False
+        if rank in [5,6]:
+            self.jump=True
+        if rank in [1]:
+            self.swim=True
         self.x = x
         self.y = y
     def getRank(self):
@@ -35,6 +35,10 @@ class Chess:
         self.y = y
     def __str__(self):
         return self.color+str(self.rank)
+    def swim(self):
+        return self.swim
+    def jump(self):
+        return self.jump
 class Board:
     def __init__(self):
         self.board=[]
@@ -71,7 +75,6 @@ class Board:
         self.chessBoard[6][4]=Chess(4,"B",6,4)#Leopard
         self.chessBoard[6][2]=Chess(3,"B",6,2)#Wolf
         self.chessBoard[6][0]=Chess(8,"B",6,0)#Elephant
-        
     def printRank(self):
         pieces=["Rat","Cat","Dog","Wolf","Leopard","Tiger","Lion","Elephant"]
         print("\n+","-"*9,"+","-"*9,"+",sep="")
@@ -80,8 +83,7 @@ class Board:
         i=0
         for i in range(0,len(pieces)):
             print("|","%8s "%i,"|","%8s "%pieces[i],"|",sep="")
-            print("+","-"*9,"+","-"*9,"+",sep="")
-            
+            print("+","-"*9,"+","-"*9,"+",sep="")           
     def printBoard(self):
         self.printRank()
         print("\n--|+-----+-----+-----+-----+-----+-----+-----+")
@@ -97,10 +99,10 @@ class Board:
     def updatePosition(self,chess,x,y):
         chess.updatePos(x,y)
         self.chessBoard[x][y]=chess
-        
-    def getPosition(self):
+    def getPosition(self,x,y):
         return self.chessBoard[x][y]
-
+    def getSpecialGrid(self,x,y):
+        return self.board[x][y]
     
 class Game:
     def __init__(self):
@@ -110,28 +112,51 @@ class Game:
         self.board=None
         self.gameStart()
         self.turnA=True
-        
     def initVar(self):
         self.running=True
         self.playerA=Player("A")
         self.playerB=Player("B")
+        self.turnA=True
         self.board=Board()
         self.board.start()
     def gameStart(self):
         self.initVar()
         while(self.running):
             self.board.printBoard()
-            msg="\nIt is Player"
-            move=input(msg)
-
-            break
-            
+            player=self.playerA.get()
+            if not self.turnA:
+                player=self.playerB.get()
+            move=""
+            while(True):
+                msg="\nIt is Player ("+player+") turn:\nInput Your Move (eg. F1>F2):"
+                move=input(msg)
+                move=move.upper()
+                valid=False
+                if((len(move)==5) and (len(move.split(">"))==2) and (move[2]==">")):
+                    if ord(move[0])in range(65,71) and ord(move[3])in range(65,71) :
+                        if ord(move[1])>=48 and ord(move[1])<=56 and ord(move[4])>=48 and ord(move[4])<=56:
+                            valid=True
+                if not valid:
+                    print("Invalid Input!")
+                    continue
+                chess=self.board.getPosition(ord(move[0])-65,ord(move[1])-48)
+                valMove=Rules().validateMove(chess,(ord(move[3])-65),(ord(move[4])-48),self.board)
+                if(type(valMove)==str):
+                    print("Player",player,"win the game")
+                    self.running=False
+                    self.endGame()
+                    break
+                if(type(valMove)==bool):
+                    if not valMove:
+                        print("Invalid Input!")
+                        continue
+                break
+            self.turnA=not self.turnA
             
     def endGame(self):
         print("Game Ended!")
         if(self.askReplay()):
             self.initVar()
-
     def askReplay(self):
         replay=input("Do you want to play again?(Yes/No):")
         replay=replay[:1].lower
@@ -140,12 +165,11 @@ class Game:
             play=True
         return play
 
-
 class Rules():
     #input: 2 chess pieces
     #checks if chess A can eat chess B based on ranks, return true if A can eat B
     #returns false otherwise
-    def validateEat(chessA, chessB):
+    def validateEat(self,chessA, chessB):
          if chessA.getRank() == 0 and chessB.getRank() == 7:
              return True
          if chessA.getRank() == 7 and chessB.getRank() == 0:
@@ -154,7 +178,6 @@ class Rules():
              return True
          else:
              return False
- 
     #input:
     #Chess: the piece that wants to move
     #int: x position of location
@@ -162,51 +185,81 @@ class Rules():
     #board: the board that the chess piece is moving on
     #returns true if the movement follows the rules of the game
     #returns false otherwised
-
-    def validateMove(chessA, x, y, board):
-        if chessA.swim == True and board.getSpecialGrid(x, y) == "water":
-            return validateSwim(chessA, x, y, board)
-        if chessA.jump == True and board.getSpecialGrid(x, y) == "water":
-            return validateJump(chessA, x, y, board)
+    def validateMove(self,chessA, x, y, board):#*****need to handle if chess is str only which mean no chess
+        if board.getSpecialGrid(x, y) == "@":
+            if self.validateWin(chessA, x, y, board) == True:
+                return "end"
+        if board.getSpecialGrid(x, y) == "#":
+            return self.validateTrap(chessA, x, y, board)
+        if chessA.swim() == True and board.getSpecialGrid(x, y) == "~~":
+            return self.validateSwim(chessA, x, y, board)
+        if chessA.jump() == True and board.getSpecialGrid(x, y) == "~~":
+            return self.validateJump(chessA, x, y, board)
         Ax, Ay = chessA.getPostion()
         chessB = board.getPosition(x,y)
         if chessB == 0:
-            if abs(Ax-x) == 1 and abs(Ay-y) == 1:
+            if abs(Ax-x) == 1 or abs(Ay-y) == 1:
                 board.updatePosition(chessA, x, y)
                 return True
-        elif validateEat(chessA, chessB):
+        elif self.validateEat(chessA, chessB):
             board.updatePosition(chessA, x, y)
             return True
         return False
-
-    def validateSwim(chessA, x, y, board):
-         chessB = board.getPosition(x,y)
-         if chessB == 0:
-             board.updatePostition(chessA, x, y, board)
-             return True
-         else:
-             return False
-    def validateJump(chessA, x, y, board):
+    
+    
+    def validateSwim(self,chessA, x, y, board):
+        Ax, Ay = chessA.getPostion()
+        chessB = board.getPosition(x,y)
+        if chessB == 0:
+            if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
+                board.updatePosition(chessA, x, y)
+                return True
+        else:
+            return False
+    
+    def validateJump(self,chessA, x, y, board):
         count = 0
-        for i in range(x,x+3):
-            count = 0
-            for j in range(y,y+3):#(j = y; j < y+3; y++):
-                if board.getSpecialGrid(i, j) == "water" :
-                    if not(board.getPosition(i,j) == 0) and board.getPosition(i,j).rank == 0:
-                        break
-                    count+=1
-                elif count == 2 or count == 3:
-                    return validateMove(chessA, i, j, board)
-  
-        for j in range(y,y+3):#(j = y; j < y+3; y++):
-            count = 0
-            for i in range(x,x+3):#(i = x; i < x+3; i ++):
-                if board.getSpecialGrid(i, j) == "water" :
-                    if not(board.getPosition(i,j) == 0) and board.getPosition(i,j).rank == 0:
-                        break
-                    count+=1
-                elif count == 2 or count == 3:
-                    return validateMove(chessA, i, j, board)
+        Ax, Ay = chessA.getPostion()
+        if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
+            for i in range(x,x+3):
+                count = 0
+                for j in range(y,y+3):
+                    if board.getSpecialGrid(i, j) == "~~" :
+                        if not(board.getPosition(i,j) == 0) and board.getPosition(i,j).rank == 0:
+                            break
+                        count = count+1
+                    elif count == 2 or count == 3:
+                        return self.validateMove(chessA, i, j, board)
+        
+            for j in range(y,y+3):
+                count = 0
+                for i in range(x,x+3):
+                    if board.getSpecialGrid(i, j) == "~~" :
+                        if not(board.getPosition(i,j) == 0) and board.getPosition(i,j).rank == 0:
+                            break
+                        count = count+1
+                    elif count == 2 or count == 3:
+                        return self.validateMove(chessA, i, j, board)
+        return False
+    
+    
+    def validateWin(self,chessA, x, y, board):
+        Ax, Ay = chessA.getPostion()
+        chessB = board.getPosition(x,y)
+        if chessB == 0:
+            if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
+                board.updatePosition(chessA, x, y)
+                return True
+        elif self.validateEat(chessA, chessB):
+            board.updatePosition(chessA, x, y)
+            return True
+        return False
+    
+    def validateTrap(self,chessA, x, y, board):
+        Ax, Ay = chessA.getPostion()
+        if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
+            board.updatePosition(chessA, x, y)
+            return True
         return False
 
 if __name__=="__main__":
