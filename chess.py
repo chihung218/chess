@@ -215,13 +215,14 @@ class Rules():
                 board.updatePosition(chessA, x, y)
                 return True
         elif self.validateEat(chessA, chessB):
-            board.updatePosition(chessA, x, y)
-            return True
+            if not chessA.color == chessB.color:
+                board.updatePosition(chessA, x, y)
+                return True
         return False
     
     
     def validateSwim(self,chessA, x, y, board):
-        Ax, Ay = chessA.getPostion()
+        Ax, Ay = chessA.getPosition()
         chessB = board.getPosition(x,y)
         if chessB == "":
             if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
@@ -232,7 +233,7 @@ class Rules():
     
     def validateJump(self,chessA, x, y, board):
         count = 0
-        Ax, Ay = chessA.getPostion()
+        Ax, Ay = chessA.getPosition()
         if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
             for i in range(x,x+3):
                 count = 0
@@ -257,19 +258,20 @@ class Rules():
     
     
     def validateWin(self,chessA, x, y, board):
-        Ax, Ay = chessA.getPostion()
+        Ax, Ay = chessA.getPosition()
         chessB = board.getPosition(x,y)
         if chessB == "":
             if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
                 board.updatePosition(chessA, x, y)
                 return True
         elif self.validateEat(chessA, chessB):
-            board.updatePosition(chessA, x, y)
-            return True
+            if not chessA.color == chessB.color:
+                board.updatePosition(chessA, x, y)
+                return True
         return False
     
     def validateTrap(self,chessA, x, y, board):
-        Ax, Ay = chessA.getPostion()
+        Ax, Ay = chessA.getPosition()
         if (abs(Ax-x) == 1 and abs(Ay-y) <2) or (abs(Ay-y) == 1 and abs(Ax-x) <2):
             board.updatePosition(chessA, x, y)
             return True
