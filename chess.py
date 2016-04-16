@@ -130,7 +130,7 @@ class Game:
                 player=self.playerB.get()
             move=""
             while(True):
-                msg="\nIt is Player ("+player+") turn:\nInput Your Move (eg. F1>F2):"
+                msg="\nIt is Player ("+player+") turn:\nInput Your Move Based on the Coordinates of the Piece(eg. F1>F2):"
                 move=input(msg)
                 move=move.upper()
                 valid=False
@@ -142,10 +142,10 @@ class Game:
                     print("Invalid Input!")
                     continue
                 #For Testing###########################
-                print("x1: " + ord(move[1])-48)
-                print("y1: " + ord(move[0])-65)
-                print("x2: " + ord(move[4])-48)
-                print("y2: " + ord(move[3])-65)
+                print(ord(move[1])-48)
+                print(ord(move[0])-65)
+                print(ord(move[4])-48)
+                print(ord(move[3])-65)
                 print("##############################################")
                 #######################################
                 chess=self.board.getPosition(ord(move[1])-48, ord(move[0])-65)
