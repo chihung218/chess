@@ -66,7 +66,7 @@ class Board:
         self.chessBoard[2][0]=Chess(0,"A",2,0)#Rat
         self.chessBoard[2][2]=Chess(4,"A",2,2)#Leopard
         self.chessBoard[2][4]=Chess(3,"A",2,4)#Wolf
-        self.chessBoard[2][6]=Chess(8,"A",2,6)#Elephant
+        self.chessBoard[2][6]=Chess(7,"A",2,6)#Elephant
         self.chessBoard[8][6]=Chess(6,"B",8,6)#Lion
         self.chessBoard[8][0]=Chess(5,"B",8,0)#Tiger
         self.chessBoard[7][5]=Chess(2,"B",7,5)#Dog
@@ -74,7 +74,7 @@ class Board:
         self.chessBoard[6][6]=Chess(0,"B",6,6)#Rat
         self.chessBoard[6][4]=Chess(4,"B",6,4)#Leopard
         self.chessBoard[6][2]=Chess(3,"B",6,2)#Wolf
-        self.chessBoard[6][0]=Chess(8,"B",6,0)#Elephant
+        self.chessBoard[6][0]=Chess(7,"B",6,0)#Elephant
     def printRank(self):
         pieces=["Rat","Cat","Dog","Wolf","Leopard","Tiger","Lion","Elephant"]
         print("\n+","-"*9,"+","-"*9,"+",sep="")
