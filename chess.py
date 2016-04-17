@@ -85,7 +85,7 @@ class Board:
             print("|","%8s "%i,"|","%8s "%pieces[i],"|",sep="")
             print("+","-"*9,"+","-"*9,"+",sep="")           
     def printBoard(self):
-        self.printRank()
+        self.printRank()#can comment it for faster runtime testing
         print("\n--|+-----+-----+-----+-----+-----+-----+-----+")
         print("--|",sep="",end="")
         for x in range(0,7):
@@ -135,20 +135,35 @@ class Game:
                 move=move.upper()
                 valid=False
                 if((len(move)==5) and (len(move.split(">"))==2) and (move[2]==">")):
-                    if ord(move[0])in range(65,71) and ord(move[3])in range(65,71) :
+                    if ord(move[0])in range(65,72) and ord(move[3])in range(65,72) :
                         if ord(move[1])>=48 and ord(move[1])<=56 and ord(move[4])>=48 and ord(move[4])<=56:
                             valid=True
                 if not valid:
                     print("Invalid Input!")
                     continue
                 #For Testing###########################
-                print(ord(move[1])-48)
-                print(ord(move[0])-65)
-                print(ord(move[4])-48)
-                print(ord(move[3])-65)
-                print("##############################################")
+                #print(ord(move[1])-48)
+                #print(ord(move[0])-65)
+                #print(ord(move[4])-48)
+                #print(ord(move[3])-65)
+                print("-"*50)
                 #######################################
                 chess=self.board.getPosition(ord(move[1])-48, ord(move[0])-65)
+                if type(chess)==str:
+                    print("No chess on",move[:2])
+                    continue
+                ##############################################
+                #for checking player is using its chess
+                #can be comment for faster runtime testing
+                if self.turnA:
+                    if not str(chess)[0]=="A":
+                        print("Not your chess")
+                        continue
+                else:
+                    if not str(chess)[0]=="B":
+                        print("Not your chess")
+                        continue
+                ###############################################
                 valMove=Rules().validateMove(chess,(ord(move[4])-48), (ord(move[3])-65),self.board)
                 if(type(valMove)==str):
                     print("Player",player,"win the game")
@@ -168,7 +183,7 @@ class Game:
             self.initVar()
     def askReplay(self):
         replay=input("Do you want to play again?(Yes/No):")
-        replay=replay[:1].lower
+        replay=replay[0].lower()
         play=False
         if replay=="y":
             play=True
