@@ -22,7 +22,7 @@ class Chess:
         self.swim=False
         if rank in [5,6]:
             self.jump=True
-        if rank in [1]:
+        if rank == 0:
             self.swim=True
         self.x = x
         self.y = y
@@ -52,8 +52,8 @@ class Board:
         self.board[8][2]="#"
         self.board[8][4]="#"
         self.board[7][3]="#"
-        self.board[0][3]="@"
-        self.board[8][3]="@"
+        self.board[0][3]="A@"
+        self.board[8][3]="B@"
         for i in range(3,6):
             for j in range(1,3):
                 self.board[i][j]="~~"
@@ -210,9 +210,14 @@ class Rules():
     #returns true if the movement follows the rules of the game
     #returns false otherwised
     def validateMove(self,chessA, x, y, board):
-        if board.getSpecialGrid(x, y) == "@":
-            if self.validateWin(chessA, x, y, board) == True:
-                return "end"
+        if board.getSpecialGrid(x, y) == "A@":
+			if chessA.color == "B":
+				if self.validateWin(chessA, x, y, board) == True:
+					return "end"
+		if board.getSpecialGrid(x, y) == "B@":
+			if chessA.color == "A":
+				if self.validateWin(chessA, x, y, board) == True:
+					return "end"
         if board.getSpecialGrid(x, y) == "#":
             return self.validateTrap(chessA, x, y, board)
         if chessA.swim == True:
