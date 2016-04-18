@@ -134,6 +134,14 @@ class Game:
                 move=input(msg)
                 move=move.upper()
                 valid=False
+                if(move=="SURRENDER"):
+                    if self.turnA:
+                    	print("Player A surrender.\nPlayer",player,"get win!")
+        	    else:
+        		print("Player B surrender.\nPlayer",player,"get win!")
+        	    self.running=False
+                    self.endGame()
+                    break
                 if((len(move)==5) and (len(move.split(">"))==2) and (move[2]==">")):
                     if ord(move[0])in range(65,72) and ord(move[3])in range(65,72) :
                         if ord(move[1])>=48 and ord(move[1])<=56 and ord(move[4])>=48 and ord(move[4])<=56:
